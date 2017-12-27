@@ -1,9 +1,4 @@
 # Django-Realtime-Chat
-```
-- Muslum Turk:
-```
-
-
 This is an example project. Every important instruction is commented, so feel free to check it.
 To run it:
   - open a console, go to the folder nodejs and type:
