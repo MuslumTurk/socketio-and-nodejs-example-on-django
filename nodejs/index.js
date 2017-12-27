@@ -15,7 +15,7 @@ io.on('connection', function(socket) {
     socket.on('message', function(msgObject) {
         
         if(msgObject.type == 'user'){
-            users.push({'name': msgObject.user_name});
+            users.push({'name': msgObject.user_name, 'id': socket.id});
             io.emit('getUser', users);
         } else if (msgObject.type == 'message') {
             io.emit('getMessage', msgObject);
@@ -32,7 +32,14 @@ io.on('connection', function(socket) {
             xhttp.open('POST', url, true);
             xhttp.send(JSON.stringify(msgObject));
         }
-        
     });
 
+    socket.on('disconnect', function () {
+        for(let i=0; i<users.length; i++){
+            if(users[i].id == socket.id){
+                users.splice(i,1);
+            }
+        }
+        io.emit('getUser', users);
+    });
 });
