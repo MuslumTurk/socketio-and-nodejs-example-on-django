@@ -1,0 +1,64 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>RealTime Chat</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/devicons/css/devicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/simple-line-icons/css/simple-line-icons.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/resume.min.css' %}" rel="stylesheet">
+
+  </head>
+
+  <body id="page-top">
+
+    <div class="container-fluid p-0">
+
+      <section class="resume-section p-3 p-lg-5 d-flex d-column" id="about">
+        <div class="my-auto">
+	        <form class="post-form" method="POST" action="chat/">
+            {% csrf_token %}
+            <div class="input-group input-group-lg" style="margin-left: 270px;">
+              <h3 style="margin-left: 150px; width: 200px;">Nickname Giriniz.</h3>  
+            </div>
+            <div class="input-group input-group-lg" style="margin-left: 250px">
+              <input type="text" name="nickname" class="form-control">
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-info btn-flat">Sohbete Katıl!</button>
+              </span>
+            </div>
+          </form>  
+        </div>
+      </section>
+		</div>
+		<div id="footer" style="height: 80px; background-color: #f5f5f5;">
+		  <div class="container" style="padding-top:5px padding-left: 15px; padding-right: 15px;">
+		    <p>&nbsp;</p>
+		    <p class="lead">This Bootstrap layout was made @<a href="">Bootply.com</a></p>
+		  </div>
+		</div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/resume.min.js' %}"></script>
+
+  </body>
+
+</html>

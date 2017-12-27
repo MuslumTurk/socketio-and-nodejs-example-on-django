@@ -1,0 +1,144 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Chat</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/devicons/css/devicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/simple-line-icons/css/simple-line-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/resume.min.css' %}" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  </head>
+
+  <body id="page-top">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script src="http://localhost:4000/socket.io/socket.io.js"></script>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top" id="sideNav">
+      <a class="navbar-brand js-scroll-trigger">
+      </a>     
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <h3>Users</h3>
+        <div id="user-list">
+          
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading" style="font-size:24px; text-shadow: 1px 1px 1px #000;">RealTime Chat</div>
+                    <div id="messages-list" class="panel-body" style="height:600px;overflow-y:scroll;width:100%;">
+                        {% for message in messages %}
+                            <div class="input-group">
+                                <span class="input-group-addon" style="text-shadow: 1px 1px 1px #000; background-color: rgb(66, 133, 244); color: #fff" >
+                                    {{ message.user_name }}
+                                </span>
+                                <input type="text" class="form-control" value="{{ message.message }}" readonly style="background-color: #fff" />
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                <div class="form-group has-feedback">
+                    <label class="control-label">Name</label>
+                    <input id="name" type="text" class="form-control" placeholder="Username" value="{{ name }}" maxlength="20" disabled/>
+                    <i class="glyphicon glyphicon-user form-control-feedback"></i>
+                </div>
+            </div>
+            <div class="col-xs-10">
+                <form>
+                    <div class="form-group has-feedback">
+                        <label class="control-label">Message</label>
+                        <input id="message" type="text" class="form-control" placeholder="Enter your message here" required maxlength="140" />
+                        <i class="glyphicon glyphicon-comment form-control-feedback"></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // host of the server
+        var host = 'localhost';
+        var nodejs_port = '4000';
+
+        var socket = io(host + ':' + nodejs_port);
+        $(function() {
+            updateScroll();
+        });
+
+        let logObject = {
+            'type': 'user',
+            'user_name': $('#name').val()
+        }
+
+        socket.emit('message', logObject);
+
+        $('form').submit(function() {
+            var msg = $('#message');
+            var name = $('#name');
+
+            if(msg.val().trim() !== "" && name.val().trim() !== "") {
+                msgObject = {
+                    'type': 'message',
+                    'user_name': name.val().trim(),
+                    'message': msg.val().trim()
+                };
+                socket.emit('message', msgObject);
+            }
+
+            msg.val('');
+            return false;
+        });
+
+        socket.on('getUser', function(users) {
+            $("#user-list").html("");
+            for(let i=0; i<users.length; i++) {
+                var us = $('<a href="#" class="list-group-item list-group-item-action list-group-item-primary"></a>').append(users[i].name);
+                $('#user-list').append(us);    
+            }
+            updateScroll();
+        });
+        socket.on('getMessage', function(msgObject) {
+            var name = msgObject.user_name;
+            var msg = msgObject.message;
+
+            var icon = $('<span class="input-group-addon" style="text-shadow: 1px 1px 1px #000; background-color: rgb(66, 133, 244); color: #fff" ></span>').append(name);
+            var msgItem = $('<input type="text" class="form-control" readonly style="background-color: #fff" />').val(msg);
+            var input_group = $('<div class="input-group"></div>').append(icon, msgItem);
+
+            $('#messages-list').append(input_group);
+            updateScroll();
+        });
+
+        function updateScroll(){
+            var element = document.getElementById("messages-list");
+            element.scrollTop = element.scrollHeight;
+        }
+    </script>
+  </body>
+
+</html>
